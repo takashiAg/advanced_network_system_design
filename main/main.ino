@@ -73,7 +73,7 @@ void loop() {
     pCharacteristic->setValue(&counter, 1);
     counter = 0;
     pCharacteristic->notify();
-    delay(1000); // bluetooth stack will go into congestion, if too many packets are sent
+    delay(100); // bluetooth stack will go into congestion, if too many packets are sent
   }
   // disconnecting
   if (!deviceConnected && oldDeviceConnected) {
