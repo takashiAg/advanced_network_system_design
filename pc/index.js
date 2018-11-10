@@ -1,34 +1,46 @@
-// 'use strict';
-
-// const noble = require('noble');
+'use strict';
 const noble = require('noble-mac');
-const knownDevices = [];
 
-noble.on('scanStart', function () {
-    console.log('*** scanStart');
-});
 
-noble.on('scanStop', function () {
-    console.log('on -> scanStop');
-});
+const services_discovered = (services) => {
+    console.log("service start")
+    var deviceInformationService = services[0];
+    deviceInformationService.discoverCharacteristics(null, function (error, characteristics) {
+        console.log('discovered the following characteristics:');
+        var manufacturerNameCharacteristic = characteristics[0];
 
-//discovered BLE device
+        manufacturerNameCharacteristic.on('data', function (data, isNotification) {
+            console.log(data.readUInt8(0) + ' times detected');
+        });
+
+        // to enable notify
+        manufacturerNameCharacteristic.subscribe(function (error) {
+            console.log('enabled notify');
+        });
+    });
+}
+
 const discovered = (peripheral) => {
-    if (peripheral.advertisement.localName == "") {
+
+    if (peripheral.advertisement.localName != "ANSD")
         return
-    }
-    // console.log('on -> discover: ' + peripheral);
-    const device = {
-        name: peripheral.advertisement.localName,
-        uuid: peripheral.uuid,
-        rssi: peripheral.rssi
-    };
-    knownDevices.push(device);
-    console.log(`${knownDevices.length}:${device.name}(${device.uuid}) RSSI${device.rssi}`);
+
+    noble.stopScanning();
+
+    console.log("connect to " + peripheral.advertisement.localName)
+
+    peripheral.on('disconnect', scanStart);
+    peripheral.connect(error => {
+        peripheral.once('servicesDiscover', services_discovered);
+        peripheral.discoverServices();
+    })
+    let uuid = peripheral.uuid
+    console.log(uuid)
 }
 
 //BLE scan start
 const scanStart = () => {
+    console.log("scan start")
     noble.startScanning();
     noble.on('discover', discovered);
 }

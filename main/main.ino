@@ -32,7 +32,7 @@ void setup() {
   Serial.begin(115200);
 
   // Create the BLE Device
-  BLEDevice::init("MyESP32");
+  BLEDevice::init("ANSD");
 
   // Create the BLE Server
   pServer = BLEDevice::createServer();
