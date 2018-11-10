@@ -5,15 +5,14 @@ const noble = require('noble-mac');
 const services_discovered = (services) => {
     console.log("service start")
     var deviceInformationService = services[0];
-    deviceInformationService.discoverCharacteristics(null, function (error, characteristics) {
+    deviceInformationService.discoverCharacteristics(null, (error, characteristics) => {
         console.log('discovered the following characteristics:');
         var manufacturerNameCharacteristic = characteristics[0];
 
-        manufacturerNameCharacteristic.on('data', function (data, isNotification) {
+        manufacturerNameCharacteristic.on('data', (data, isNotification) => {
             console.log(data.readUInt8(0) + ' times detected');
         });
 
-        // to enable notify
         manufacturerNameCharacteristic.subscribe(function (error) {
             console.log('enabled notify');
         });
