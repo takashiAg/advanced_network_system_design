@@ -1,0 +1,25 @@
+{
+  "name": "advanced_network_system_design",
+  "version": "1.0.0",
+  "description": "prototype for advanced network system design",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/takashiAg/advanced_network_system_design.git"
+  },
+  "author": "ryosukeando",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/takashiAg/advanced_network_system_design/issues"
+  },
+  "homepage": "https://github.com/takashiAg/advanced_network_system_design#readme",
+  "dependencies": {
+    "mongodb": "^3.1.9",
+    "mysql": "^2.16.0",
+    "noble-mac": "git://github.com/Timeular/noble-mac.git"
+  }
+}

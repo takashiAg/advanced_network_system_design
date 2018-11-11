@@ -32,7 +32,7 @@ void setup() {
   Serial.begin(115200);
 
   // Create the BLE Device
-  BLEDevice::init("MyESP32");
+  BLEDevice::init("ANSD");
 
   // Create the BLE Server
   pServer = BLEDevice::createServer();
@@ -73,7 +73,7 @@ void loop() {
     pCharacteristic->setValue(&counter, 1);
     counter = 0;
     pCharacteristic->notify();
-    delay(1000); // bluetooth stack will go into congestion, if too many packets are sent
+    delay(100); // bluetooth stack will go into congestion, if too many packets are sent
   }
   // disconnecting
   if (!deviceConnected && oldDeviceConnected) {
