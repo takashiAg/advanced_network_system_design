@@ -1,32 +1,22 @@
-const mongodb = require('mongodb')
-const MongoClient = mongodb.MongoClient
+const electron = require('electron');
+const app = electron.app;
+const BrowserWindow = electron.BrowserWindow;
 
-let database;
-let last_detect = new Date();
+let mainWindow = null;
 
-MongoClient.connect('mongodb://localhost:27017', (err, client) => {
-    if (err)
-        throw err
-    console.log("Connected successfully to server")
-    database = client.db("ANSD");
-})
+app.on('window-all-closed', function() {
+    if (process.platform !== 'darwin') {
+        app.quit();
+    }
+});
 
+app.on('ready', function() {
 
-let loop = () => {
-    console.log("find")
-    let d = null;
-    database.collection('documents').find({
-        date: {$gte: new Date(new Date() - 60000)},
-        count: {$gte: 5},
-    }).toArray((error, documents) => {
-        for (var document of documents) {
-            console.log(document.count);
-            d = document.date;
-        }
-        if (d == null)
-            return
-        last_detect = d
+    // ブラウザ(Chromium)の起動, 初期画面のロード
+    mainWindow = new BrowserWindow({width: 1200, height: 1000});
+    mainWindow.loadURL('file://' + __dirname + '/index.html');
+
+    mainWindow.on('closed', function() {
+        mainWindow = null;
     });
-    console.log(last_detect)
-}
-setInterval(loop, 100)
+});
