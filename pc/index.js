@@ -1,5 +1,10 @@
 'use strict';
 const noble = require('noble-mac');
+const mongodb = require('mongodb')
+const MongoClient = mongodb.MongoClient
+const assert = require('assert')
+
+let database;
 
 
 const services_discovered = (services) => {
@@ -10,7 +15,11 @@ const services_discovered = (services) => {
         var manufacturerNameCharacteristic = characteristics[0];
 
         manufacturerNameCharacteristic.on('data', (data, isNotification) => {
-            console.log(data.readUInt8(0) + ' times detected');
+            // console.log(data.readUInt8(0) + ' times detected');
+            let reaction_number=data.readUInt8(0)
+            console.log(reaction_number + ' times detected');
+
+            database.collection('documents').insertOne({"count": reaction_number,"date":new Date()})
         });
 
         manufacturerNameCharacteristic.subscribe(function (error) {
@@ -49,3 +58,14 @@ if (noble.state === 'poweredOn') {
 } else {
     noble.on('stateChange', scanStart);
 }
+
+
+MongoClient.connect('mongodb://localhost:27017', (err, client) => {
+    if (err)
+        throw err
+    console.log("Connected successfully to server")
+    database = client.db("ANSD");
+
+    // database.collection('documents').insertOne({"count": 1000,"date":new Date()})
+    // database.collection('documents').insertOne({"a": "test"})
+})
