@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script>
+        window.jQuery = window.$ = require("jquery");
+        // require("bootstrap")
+    </script>
+    <script>
+        const mongodb = require('mongodb')
+        const MongoClient = mongodb.MongoClient
+
+        let database;
+        let last_detect = new Date();
+
+        MongoClient.connect('mongodb://localhost:27017', (err, client) => {
+            if (err)
+                console.error(err);
+            console.log("Connected successfully to server")
+            database = client.db("ANSD");
+        })
+
+        let constrain = x => {
+            if (x < 0) return 0;
+            if (x > 100) return 100;
+            return x;
+        }
+        //thread of get last react time
+        setInterval(() => {
+            let cstatus = document.getElementById("status")
+            // let progress = document.getElementById("progress")
+            let diff = (new Date() - last_detect) + 2000
+            let syuuchuu = constrain(100 - diff / 500)
+            $($("#progresss div")[0]).css({width: syuuchuu + "%"})
+            $($("#progresss div")[0]).html(syuuchuu + "%")
+            // progress.value = 100 - diff / 500
+            if (diff > 40 * 1000) {
+                //集中なし
+                cstatus.innerHTML = "a君のぺんが長い時間止まっています。集中していない様です。"
+            } else if (diff > 20 * 1000) {
+                //集中なし
+                cstatus.innerHTML = "a君のぺんが止まっています。集中していない様です。"
+            } else {
+                //集中
+                cstatus.innerHTML = "a君のぺんが動いています。集中している様です。"
+            }
+        }, 100)
+
+        //thread of get last react time
+        setInterval(() => {
+            // console.log("find")
+            let d = null;
+            database.collection('documents').find({
+                date: {$gte: new Date(new Date() - 60000)},
+                count: {$gte: 5},
+            }).toArray((error, documents) => {
+                for (var document of documents) {
+                    // console.log(document.count);
+                    d = document.date;
+                }
+                if (d == null)
+                    return
+                last_detect = d
+            });
+            // console.log(last_detect)
+        }, 100)
+
+    </script>
+    <script src="node_modules/bootstrap/dist/js/bootstrap.js"></script>
+    <link rel="stylesheet" href="node_modules/bootstrap/dist/css/bootstrap.css">
+</head>
+<body>
+<h1 id="status">electron!</h1>
+<!--<label>集中度合い</label><progress id="progress" value="50" max="100">10%</progress>-->
+<div class="progress" id="progresss">
+    <div class="progress-bar" role="progressbar" style="width: 25%;" aria-valuenow="100" aria-valuemin="0"
+         aria-valuemax="100">25%
+    </div>
+</div>
+</body>
+</html>
